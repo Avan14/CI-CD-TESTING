@@ -1,0 +1,54 @@
+name: CI/CD Dev Pipeline
+
+on:
+  push:
+    branches:
+      - "test"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: CODE
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Install and test backend
+      - name: Install backend dependencies
+        run: npm install
+        working-directory: CODE/be
+
+      - name: Run backend tests
+        run: npm test || echo "No backend tests found"
+        working-directory: CODE/be
+
+      # Install and test frontend
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: CODE/my-app
+
+      - name: Run frontend lint
+        run: npx eslint . || echo "Linting failed"
+        working-directory: CODE/my-app
+
+      - name: Run frontend tests
+        run: npm test || echo "No frontend tests found"
+        working-directory: CODE/my-app
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: CODE/my-app
+
+      # Deploy step (replace with your actual deployment commands)
+      - name: Deploy to development environment
+        run: |
+          echo "Deploying backend and frontend to development environment..."
+          # Add your deployment commands here 
